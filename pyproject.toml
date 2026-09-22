@@ -1,0 +1,16 @@
+[project]
+name = "bermuda-lead-scrape"
+version = "0.1.0"
+description = "Scrapes Bermuda business directories, enriches and classifies leads for a B2B telecom CRM."
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.27",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.2",
+    "dnspython>=2.6",
+    "tldextract>=5.1",
+    "pyyaml>=6.0",
+]
+
+[tool.uv]
+package = false

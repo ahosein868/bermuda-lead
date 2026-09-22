@@ -1,0 +1,163 @@
+# Bermuda B2B Lead Scraper configuration.
+
+http:
+  user_agent: "BermudaLeadScraper/0.1 (+hosein.andrew@gmail.com)"
+  requests_per_second: 1.0      # per host
+  timeout_seconds: 30
+  max_retries: 3
+  cache_dir: "data/cache"
+
+sources:
+  bermudayp:
+    enabled: true
+    sitemap_index: "https://www.bermudayp.com/sitemapxml/sitemap_index_47.xml"
+    # Category search pages give real category labels but cost ~800+ requests.
+    # Enable with `run.py scrape --with-categories`.
+    category_max_pages: 3
+  chamber:
+    enabled: true
+    base: "https://www.bermudachamber.bm"
+    alpha_keys: "0abcdefghijklmnopqrstuvwxyz"
+
+enrich:
+  max_pages_per_site: 3
+  page_paths: ["/contact", "/contact-us", "/about", "/about-us"]
+  max_text_chars: 6000
+  dns_enabled: true
+  checkpoint_every_records: 100   # save progress every N records
+
+# Role-based addresses are business contacts. Anything else is flagged personal
+# and excluded from the CRM export by default (Bermuda PIPA).
+role_email_prefixes:
+  - info
+  - sales
+  - contact
+  - office
+  - admin
+  - enquiries
+  - inquiries
+  - hello
+  - support
+  - reception
+  - mail
+  - general
+  - service
+  - customerservice
+  - bookings
+  - reservations
+
+# Telecom / IT vendors to detect as the prospect's CURRENT providers.
+providers:
+  telecom:
+    - {vendor: "One Communications", patterns: ["one communications", "onecomm", "@one.bm", "logic.bm", "north rock", "northrock", "bermuda cablevision"]}
+    - {vendor: "Digicel", patterns: ["digicel", "@digicel.bm"]}
+    - {vendor: "Paradise Mobile", patterns: ["paradise mobile", "paradisemobile"]}
+    - {vendor: "TeleBermuda International", patterns: ["telebermuda", " tbi ", "@tbi.bm"]}
+    - {vendor: "Bermuda Digital Communications", patterns: ["bermuda digital communications", "cellone", "cell one"]}
+  it_managed:
+    - {vendor: "Fireminds", patterns: ["fireminds"]}
+    - {vendor: "Gateway Systems", patterns: ["gateway systems"]}
+    - {vendor: "QuoVadis", patterns: ["quovadis"]}
+    - {vendor: "Applied Computer Technologies", patterns: ["applied computer technologies", " act ltd"]}
+    - {vendor: "CedarBridge / TeleCentre", patterns: ["telecentre"]}
+
+# MX hostname fragment -> email platform. Reveals the incumbent mail/IT vendor.
+mx_providers:
+  "protection.outlook.com": "Microsoft 365"
+  "mail.protection.outlook.com": "Microsoft 365"
+  "outlook.com": "Microsoft 365"
+  "microsoft.com": "Microsoft 365"
+  "google.com": "Google Workspace"
+  "googlemail.com": "Google Workspace"
+  "ppe-hosted.com": "Proofpoint Essentials"
+  "pphosted.com": "Proofpoint"
+  "proofpoint": "Proofpoint"
+  "mimecast": "Mimecast"
+  "barracudanetworks.com": "Barracuda"
+  "barracuda": "Barracuda"
+  "messagelabs": "Broadcom/Symantec Email"
+  "link.bm": "Link Bermuda"
+  "logic.bm": "Logic / One Communications"
+  "north-rock.com": "North Rock / One Communications"
+  "northrock.bm": "North Rock / One Communications"
+  "ibl.bm": "IBL / One Communications"
+  "one.bm": "One Communications"
+  "transact.bm": "TransAct"
+  "fireminds": "Fireminds"
+  "zoho": "Zoho Mail"
+  "secureserver.net": "GoDaddy"
+  "registrar-servers.com": "Namecheap"
+  "yandex": "Yandex Mail"
+  "dreamhost": "DreamHost"
+  "hostinger": "Hostinger"
+  "improvmx": "ImprovMX"
+  "titan.email": "Titan Email"
+
+ns_providers:
+  "cloudflare": "Cloudflare"
+  "awsdns": "AWS Route 53"
+  "azure-dns": "Azure DNS"
+  "googledomains": "Google Cloud DNS"
+  "ns.google": "Google Cloud DNS"
+  "dnsmadeeasy.com": "DNS Made Easy"
+  "link.bm": "Link Bermuda"
+  "bmnic.bm": "Bermuda NIC"
+  "logic.bm": "Logic / One Communications"
+  "north-rock.com": "North Rock / One Communications"
+  "northrock.bm": "North Rock / One Communications"
+  "ibl.bm": "IBL / One Communications"
+  "one.bm": "One Communications"
+  "fireminds": "Fireminds"
+  "transact.bm": "TransAct"
+  "godaddy": "GoDaddy"
+  "domaincontrol.com": "GoDaddy"
+  "registrar-servers.com": "Namecheap"
+  "wixdns.net": "Wix"
+  "squarespacedns.com": "Squarespace"
+  "shopify": "Shopify"
+  "hostgator": "HostGator"
+  "bluehost": "Bluehost"
+  "siteground": "SiteGround"
+  "dreamhost": "DreamHost"
+
+taxonomy:
+  sectors:
+    - "Hospitality & Tourism"
+    - "Insurance & Reinsurance"
+    - "Banking & Financial Services"
+    - "Legal & Corporate Services"
+    - "Retail"
+    - "Construction & Real Estate"
+    - "Healthcare"
+    - "Education"
+    - "Transportation & Logistics"
+    - "Professional Services"
+    - "Technology & Telecom"
+    - "Government & Non-profit"
+    - "Food & Beverage"
+    - "Other"
+  size_tiers:
+    - "Micro"      # <10 staff
+    - "Small"      # 10-49
+    - "Medium"     # 50-249
+    - "Large"      # 250+
+    - "Unknown"
+  geo_scopes:
+    - "Local"      # Bermuda only
+    - "Regional"   # Caribbean / North America
+    - "Global"
+    - "Unknown"
+
+classify:
+  cli: "claude"
+  model: "sonnet"
+  batch_size: 15
+  checkpoint_every_batches: 5   # save progress every N batches
+  max_retries: 2
+  timeout_seconds: 600
+
+export:
+  markdown_path: "business-leads.md"
+  csv_path: "leads.csv"
+  suppress_file: "suppress.txt"
+  include_personal_emails: false

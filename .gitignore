@@ -1,0 +1,20 @@
+# Runtime state and caches
+data/
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Local Claude Code settings
+.claude/settings.local.json
+
+# Opt-out list: may name real businesses that asked not to be contacted
+suppress.txt
+
+# Generated lead data. These hold contact details for ~3,300 businesses
+# (names, phones, emails, addresses). They are regenerable with
+# `uv run python run.py all`, and publishing them is a Bermuda PIPA
+# question, so they stay out of version control by default.
+# To include them, delete the two lines below.
+leads.csv
+business-leads.md
